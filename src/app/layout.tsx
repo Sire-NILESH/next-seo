@@ -26,9 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header />
-        <main className="p-5">{children}</main>
-        <Footer />
+        <div className="min-h-screen flex flex-col justify-between">
+          <Header />
+          <main className="container mx-auto flex-1 p-5">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
