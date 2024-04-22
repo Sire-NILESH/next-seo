@@ -1,8 +1,40 @@
 import { delay } from "@/lib/utils";
-import { BlogPost } from "@/models/BlogPost";
+import { BlogPost, BlogPostsResponse } from "@/models/BlogPost";
+import { Metadata } from "next";
+// import { cache } from "react";
 
 interface BlogPostPageProps {
   params: { postId: string };
+}
+
+// For implementing SSG
+export async function generateStaticParams() {
+  const response = await fetch("https://dummyjson.com/posts");
+  const { posts }: BlogPostsResponse = await response.json();
+
+  return posts.map((post) => post.id);
+}
+
+// to dedupe async calls that are other than fetch.
+// const getPost = cache(async (postId: string) => {
+//   const post = await prisma.post.findUnique(postId);
+
+//   return post
+// });
+
+export async function generateMetadata({
+  params: { postId },
+}: BlogPostPageProps): Promise<Metadata> {
+  const response = await fetch(`https://dummyjson.com/posts/${postId}`);
+  const post: BlogPost = await response.json();
+
+  return {
+    title: post.title,
+    description: post.body,
+    // openGraph: {
+    //   images: [{ url: post.imageUrl }],
+    // },
+  };
 }
 
 export default async function BlogPostPage({
